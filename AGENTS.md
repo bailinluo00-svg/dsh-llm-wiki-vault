@@ -21,9 +21,6 @@ ObsidianVault for DSH/            ← 仓库根（Obsidian vault + Agent 项目�
 │       ├── pdfs/                 ← 原始 PDF 存档（只增不改）
 │       └── _source/              ← 文本/HTML 素材的原件存档（只增不改）
 ├── wiki/                         ← 【你拥有】编译后的知识
-│   ├── <topic>/                  ← 你的主题目录：wiki/<topic>/<article>.md，只允许一层
-│   │   ├── example-topic/        ← 示例评估（4 篇）
-│   │   └── example-topic-2/    ← 示例检测与定位（3 篇）
 │   ├── entities/                 ← 【插件拥有】人物/机构/项目/产品等命名实体页
 │   ├── concepts/                 ← 【插件拥有】主题/方法/定义等概念页
 │   ├── sources/                  ← 【插件拥有】每篇被 UI 摄取的原稿一页（溯源锚点）
