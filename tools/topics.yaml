@@ -1,0 +1,25 @@
+# wiki/<topic>/ 的索引展示配置，由 tools/sync_index.py 读取。
+#
+# 每个主题一个条目，key 必须与 wiki/ 下的目录名完全一致：
+#   label   —— 索引 H2 标题里破折号后的中文名
+#   blurb   —— H2 下面的一句话说明
+#   pin     —— 覆盖某篇文章的 Summary 文本（key 为文件名去掉 .md）
+#
+# 索引表格里的链接形式：
+#   index_name: false（默认）→ [[页面标题]]              Obsidian 短式链接，最易读
+#   index_name: true         → [[wiki/<topic>/<页面>|页面标题]]  显式全路径，非 Obsidian 消费者也能解析
+
+settings:
+  index_name: true
+
+topics: {}
+
+# 首次 Ingest 并建立 wiki/<topic>/ 之后，按下面的形状补上条目，
+# 然后跑 `python tools/sync_index.py` 重建索引：
+#
+# topics:
+#   <example-topic>:
+#     label: 主题中文名
+#     blurb: 一句话说明这个主题收录什么。
+#     pin:
+#       <页面文件名去掉 .md>: 覆盖用的摘要文本（可选，不写则用页面 frontmatter 的 summary）

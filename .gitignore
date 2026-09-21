@@ -1,0 +1,62 @@
+# ============================================================================
+# ObsidianVault for DSH — .gitignore
+#
+# 原则：排除「运行时状态」与「机器生成物」，保留「知识内容」与「契约」。
+# 一个东西该不该进版本库，看的不是它叫什么后缀，而是
+# 「它变了，是不是意味着有人真的改了什么」。
+# ============================================================================
+
+# ---- Obsidian 运行时状态（会随每次 UI 操作变动，噪音极大） ----
+.obsidian/workspace*
+.obsidian/cache
+.obsidian/backlink-cache
+.obsidian/.trash/
+.trash/
+
+# ---- 插件内部状态 ----
+# data.json 含 queryHistory（查询历史）与插件设置。API key 本身不在 vault 里——
+# 它存在 Obsidian 的 SecretStorage（系统钥匙串），data.json 只留一个 SecretId 引用。
+# 故此处排除的理由是「运行时状态 + 个人查询历史」，不是「文件里有明文密钥」。
+.obsidian/plugins/*/data.json
+.obsidian/community-plugins.json
+
+# ---- DSH / Node ----
+node_modules/
+.env
+.env.*
+!.env.example
+
+# 注意：这里**故意不写 `*.log`**。
+# 本仓库的 log.md 与 wiki/log.md 是知识库契约的一部分（追加式操作日志），
+# 必须入库。若用 shell 重定向抓了调试输出（如 build.log），放进 tmp/ 或
+# 在下面追加具体文件名，不要用全局后缀规则把真正的日志一起挡掉。
+
+# ---- 工具自身产物 ----
+tools/__pycache__/
+**/__pycache__/
+*.pyc
+
+# check_plugin_ready.py 写出的结构快照：机器生成的运行时状态。
+# 每次跑都会变，入库只会制造「每次都有 diff、但没人改过任何东西」的噪音。
+tools/.plugin-readiness.json
+
+# ---- 系统 / 编辑器噪音 ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- 临时文件与备份后缀 ----
+*.tmp
+*~
+*.bak
+*.orig
+
+# ============================================================================
+# 注意：docs/.integrity.json（check_integrity.py 的哈希台账）**故意入库**。
+# 它是「契约应该是什么样」的唯一权威记录。入库之后
+# `git diff docs/.integrity.json` 能直接显示哪几个契约文件的哈希变了——
+# 比脚本自己的 SHRUNK 判断更强。重新 bless 会在这份文件里留下 diff。
+#
+# 另：raw/**/pdfs/*.pdf 也**故意入库**。它们是 grounding invariant 的锚，
+# 且不可再生（重新下载不保证拿到同一版本）。代价是仓库 ~18 MB。
+# ============================================================================

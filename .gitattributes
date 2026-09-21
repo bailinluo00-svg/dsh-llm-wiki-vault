@@ -1,0 +1,16 @@
+# PDF 是二进制：不要尝试 diff / merge，也不要让 git 统计行数。
+*.pdf binary
+
+# 知识页与素材文本走正常文本 diff（这是本仓库真正的价值所在）。
+*.md text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+
+# Windows 下 Obsidian 可能写出 CRLF；归一化避免整文件 diff 噪音。
+*.css text eol=lf
+*.js text eol=lf
+
+# 主题与插件 bundle 不参与语言统计，避免污染仓库的语言构成。
+.obsidian/themes/** linguist-vendored
+.obsidian/plugins/**/*.js linguist-vendored
