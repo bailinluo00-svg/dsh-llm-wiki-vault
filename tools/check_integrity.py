@@ -47,6 +47,11 @@ WATCHED = [
     "LLM Wiki 导航.md",
     "docs/目录结构说明.md",
     "docs/操作指南.md",
+    # The public repo's README and LICENSE: their authoritative copies live here,
+    # not at the vault root, and the vault root is the only place a person thinks
+    # to look. Truncating one would silently change what the world downloads.
+    "docs/publish/README.md",
+    "docs/publish/LICENSE",
     "inbox/README.md",
     "tools/topics.yaml",
 ]

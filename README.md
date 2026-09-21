@@ -71,9 +71,14 @@ PDF ingestion needs `pypdf`:
 pip install pypdf
 ```
 
-The scripts hardcode a `VAULT = Path(r"...")` constant at the top, and the docs show a
-`PYTHONPATH` line. **Both are meant to be edited for your machine** — that is the only path
-configuration you have to touch.
+**One edit is required.** Every script declares its vault path in a constant near the top:
+
+```python
+VAULT = Path(r"/absolute/path/to/your/vault")
+```
+
+Change it to wherever you cloned this repo, and do the same for the `PYTHONPATH` line in the docs.
+That is the only path configuration you have to touch.
 
 ---
 
@@ -108,16 +113,17 @@ The tools, and what each one is actually for:
 
 ## Two things that will bite you
 
-**1. The plugin overwrites `wiki/index.md` wholesale.** The chain is
-`generateFlatIndex` → `indexGenerator.writeFile` → `createOrUpdateFile` →
-`vault.process(file, () => content)` — an overwrite, not an append. So **after every plugin-side
-ingest or lint, re-run:**
+**1. The plugin overwrites `wiki/index.md` wholesale.** It does not append. So **after every
+plugin-side ingest or lint, re-run:**
 
 ```bash
 python tools/sync_index.py --bridge-index
 ```
 
-**2. The plugin does not segment Chinese text.** `tokenizeQuery` treats an entire CJK run as a single
+The marked Agent section at the end of that file is how compiled pages become visible to the plugin's
+query panel at all — and it is the first thing the plugin's rebuild destroys.
+
+**2. The plugin does not segment Chinese text.** Its tokenizer treats an entire CJK run as a single
 token, so a Chinese query can never match a title by substring, and the lexical path can never reach
 its match threshold. Retrieval then depends entirely on the keyword fallback, which scores
 **title +3 / alias +2 / summary +1**. That makes `aliases` in each page's frontmatter a *load-bearing*
@@ -130,7 +136,8 @@ aliases:
   - ACRONYM
 ```
 
-Full analysis, with source line numbers, is in `AGENTS.md` §5.1.
+Both behaviours were established by reading the plugin's bundled source, with line numbers recorded in
+`AGENTS.md` §5.1. If you use a different plugin version, re-verify before trusting them.
 
 ---
 
@@ -138,8 +145,8 @@ Full analysis, with source line numbers, is in `AGENTS.md` §5.1.
 
 - **`raw/` is append-only.** Compiled pages cite it; nothing rewrites it. That is what lets a page
   verified once stay valid forever.
-- **Two graphs, deliberately disconnected.** The plugin's `entities/concepts/sources` pages and the
-  agent's `wiki/<topic>/` pages do not reference each other. The plugin's LLM will invent things
+- **Two graphs, deliberately disconnected.** The plugin's own `entities/concepts/sources` pages and
+  the agent's `wiki/<topic>/` pages do not reference each other. The plugin's LLM will invent things
   (observed: a transliterated author name that appears nowhere in the source), so its output is kept
   out of the trusted track. The only bridge is the marked section in `wiki/index.md`.
 - **Validation is layered, and honest about its limits.** `lint_grounding.py` flags candidates, not
@@ -158,16 +165,16 @@ mechanisms were used, because one was not enough:
 
 - **Mechanical substitution** for demonstration values — a sample page title, a sample topic slug, a
   sample filename. The *shape* stays, the content goes.
-- **Full replacement** for the files whose value *was* the history: `log.md`, `更新公告.md`,
-  `wiki/log.md`, `index.md`, `LLM Wiki 导航.md` and `tools/topics.yaml`. Substitution cannot sanitise
-  those — every line describes what was actually ingested, and the `pin:` blocks even carried the
-  sources' numeric findings. They ship as documented, empty contracts instead.
+- **Full replacement** for the files whose value *was* the history: the logs, the changelog, the two
+  index pages and the topic config. Substitution cannot sanitise those — every line describes what was
+  actually ingested, and the topic config even carried the sources' numeric findings. They ship as
+  documented, empty contracts instead.
 
 The result was verified by a purpose-built scanner that distinguishes a real leak (a source's author,
-title, DOI, topic slug) from an expected placeholder (`example-source.pdf`, `<topic>`). It reports
-**0 literature values** across all 28 files. The tools were then smoke-tested against the empty wiki
-to confirm a fresh clone works: every script compiles, `sync_index.py --check` reports in-sync,
-`verify_bridge.py` and `check_integrity.py` exit 0, and the integrity ledger round-trips.
+title, DOI, topic slug) from an expected placeholder such as `example-source.pdf` or `<topic>`. It
+reports **0 literature values**. The tools were then smoke-tested against the empty wiki to confirm a
+fresh clone works: every script compiles, the index check reports in-sync, and the integrity ledger
+round-trips.
 
 ## Language
 

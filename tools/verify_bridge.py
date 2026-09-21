@@ -108,7 +108,10 @@ for path, content in loaded.items():
 node_count = len(all_paths)
 edge_count = sum(len(v) for v in edges.values())
 if node_count == 0:
-    print("  INFO 图为空 — 模板初始状态，还没有任何编译页（不是失败）")
+    # No compiled pages yet: an empty graph is the CORRECT state, not a failure.
+    # (A fresh clone of the published template hits exactly this branch, and
+    # reporting two failures on first run would teach people to ignore the tool.)
+    print("  INFO 没有编译页，图为空 — 这是合法初始状态，不是失败")
 else:
     check(node_count >= 1, f"节点 {node_count} 个", "图为空")
     check(edge_count >= 1, f"边 {edge_count} 条", "零边 — 所有种子度数 0，退化分支会直接返回空")
